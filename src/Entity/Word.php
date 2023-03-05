@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\WordRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: WordRepository::class)]
 class Word
@@ -14,6 +15,11 @@ class Word
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z]+$/",
+        message: "Word must be a valid English word!"
+    )]
     private ?string $word = null;
 
     public function getId(): ?int
