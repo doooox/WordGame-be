@@ -43,7 +43,7 @@ class WordsController extends AbstractController
 
         if ($isPalindrome) {
             $score += 3;
-        } elseif (strlen($word) > 1) {
+        } elseif (strlen($word) > 2) {
             for ($i = 0; $i < strlen($word); $i++) {
                 $testWord = substr($word, 0, $i) . substr($word, $i + 1);
                 if ($testWord === strrev($testWord)) {
@@ -52,17 +52,11 @@ class WordsController extends AbstractController
             }
         }
 
-        if ($error) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => $error,
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
         return new JsonResponse([
             'success' => true,
             'message' => sprintf('The word "%s" scored %d points.', $word, $score),
             'score' => $score,
+            'error' => $error
         ]);
     }
 }
