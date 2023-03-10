@@ -16,8 +16,6 @@ class WordsController extends AbstractController
     public function index(PersistenceManagerRegistry $doctrine, Request $request): JsonResponse
     {
         $word = null;
-        $score = null;
-        $error = null;
 
         $requestData = json_decode($request->getContent(), true);
         $word = $requestData['word'] ?? null;
@@ -32,34 +30,16 @@ class WordsController extends AbstractController
         $wordExists = $doctrine->getRepository(Word::class)->findOneBy(['word' => $word]);
         if (!$wordExists) {
             $error = "$word is not in the English dictionary";
-        }
-
-        $numberOfLetters = str_split((string)$word);
-        $uniqueLetters = array_unique($numberOfLetters);
-        $lettersScore = count($uniqueLetters);
-        $isPalindrome = $word == strrev($word);
-
-        $score = $lettersScore;
-
-        if ($isPalindrome) {
-            $score += 3;
-        } elseif (strlen($word) > 2) {
-            for ($i = 0; $i < strlen($word); $i++) {
-                $testWord = substr($word, 0, $i) . substr($word, $i + 1);
-                if ($testWord === strrev($testWord)) {
-                    $score += 2;
-                }
-            }
-        }
-
-        if ($error) {
             return new JsonResponse(['error' => $error]);
         }
+
+        $score = $wordExists->getScore();
+
         return new JsonResponse([
             'success' => true,
             'message' => sprintf('The word "%s" scored %d points.', $word, $score),
             'score' => $score,
-            'error' => $error
+            'error' => null
         ]);
     }
 }

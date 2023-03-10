@@ -7,7 +7,27 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class WordTest extends WebTestCase
 {
-    public function testWordFound(): void
+    public function testWordExists(): void
+    {
+        $client = static::createClient();
+
+        $entityManager = $client->getContainer()->get('doctrine')->getManager();
+        $word = new Word();
+        $word->setWord('word');
+        $entityManager->persist($word);
+        $entityManager->flush();
+
+        $client->request('POST', '/api/words', [], [], [], json_encode(['word' => 'word']));
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJsonStringEqualsJsonString('{
+            "success": true,
+            "message": "The word \"word\" scored 4 points.",
+            "score": 4,
+            "error": null
+        }', $client->getResponse()->getContent());
+    }
+    public function testWordIsAlmostPalindrom(): void
     {
         $client = static::createClient();
 
@@ -24,6 +44,26 @@ class WordTest extends WebTestCase
             "success": true,
             "message": "The word \"levels\" scored 6 points.",
             "score": 6,
+            "error": null
+        }', $client->getResponse()->getContent());
+    }
+    public function testWordIsPalindrom(): void
+    {
+        $client = static::createClient();
+
+        $entityManager = $client->getContainer()->get('doctrine')->getManager();
+        $word = new Word();
+        $word->setWord('rotator');
+        $entityManager->persist($word);
+        $entityManager->flush();
+
+        $client->request('POST', '/api/words', [], [], [], json_encode(['word' => 'rotator']));
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJsonStringEqualsJsonString('{
+            "success": true,
+            "message": "The word \"rotator\" scored 7 points.",
+            "score": 7,
             "error": null
         }', $client->getResponse()->getContent());
     }

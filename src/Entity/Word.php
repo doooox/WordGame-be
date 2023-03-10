@@ -38,4 +38,46 @@ class Word
 
         return $this;
     }
+    public function getLetterScore()
+    {
+        $numberOfLetters = str_split((string)$this->word);
+        $uniqueLetters = array_unique($numberOfLetters);
+        $lettersScore = count($uniqueLetters);
+        return $lettersScore;
+    }
+    public function isPalindrom()
+    {
+        if ($this->word == strrev($this->word)) {
+            return true;
+        }
+        return false;
+    }
+    public function isAlmostPalindrom()
+    {
+        if (strlen($this->word) > 2) {
+            for ($i = 0; $i <= strlen($this->word); $i++) {
+                $testWord = substr($this->word, 0, $i) . substr($this->word, $i + 1);
+                if ($testWord === strrev($testWord)) {
+                    return true;
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+    public function getScore(): int
+    {
+        $score = 0;
+
+        $score = $this->getLetterScore();
+        $isPalindrome = $this->isPalindrom();
+        $isAlmostPalindrome = $this->isAlmostPalindrom();
+
+        if ($isPalindrome) {
+            $score += 3;
+        } elseif ($isAlmostPalindrome) {
+            $score += 2;
+        }
+        return $score;
+    }
 }
