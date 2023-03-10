@@ -52,6 +52,9 @@ class WordsController extends AbstractController
             }
         }
 
+        if ($error) {
+            return new JsonResponse(['error' => $error]);
+        }
         return new JsonResponse([
             'success' => true,
             'message' => sprintf('The word "%s" scored %d points.', $word, $score),
